@@ -5,10 +5,16 @@ class sfErrorNotifierPluginConfiguration extends sfPluginConfiguration
   public function initialize()
   { 
     $this->_initializeConfig();
-    if (!sfConfig::get('sf_notify_enabled')) return;
+    
+    if (!$this->isEnabled()) return;
     
     $this->_initializeEventListeners();
     $this->_initializeErrorHandler();
+  }
+  
+  protected function isEnabled()
+  {
+    return sfConfig::get('sf_notify_enabled');
   }
   
   protected function _initializeConfig()

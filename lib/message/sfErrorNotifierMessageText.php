@@ -9,6 +9,7 @@ class sfErrorNotifierMessageText extends sfBaseErrorNotifierMessage
   
   public function render()
   {
+    $body = '';
     foreach ($this->_data as $title => $values) {
       is_array($values) || $values = array($values); 
       

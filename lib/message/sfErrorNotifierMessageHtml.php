@@ -32,7 +32,7 @@ class sfErrorNotifierMessageHtml extends sfBaseErrorNotifierMessage
       $body .= $this->_renderRow($name, $value);
     }
     
-    $body .= '</table';
+    $body .= '</table>';
     
     return $body;
   }
@@ -46,7 +46,8 @@ class sfErrorNotifierMessageHtml extends sfBaseErrorNotifierMessage
         </th>\n
         <td style=\"padding: 4px;spacing: 0;text-align: left;background:#eeeeee\">
           {$this->_prepareValue($td)}
-        </td>\n</tr>";  
+        </td>\n
+      </tr>";  
   } 
   
   protected function _renderTitle($title)

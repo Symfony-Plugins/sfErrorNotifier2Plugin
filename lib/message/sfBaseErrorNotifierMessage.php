@@ -38,14 +38,14 @@ abstract class sfBaseErrorNotifierMessage
   
   public function getSubject()
   {
-    return "ERROR: {$this->_data['server']['host']} - {$this->_data['summary']['environmen']} - {$data['summary']['subject']}";
+    return "ERROR: {$this->_data['server']['uri']} - {$this->_data['summary']['environment']} - {$this->_data['summary']['subject']}";
   }
   
   protected function _initSummarySection($text)
   {
     return array(
       'subject' => $text,
-      'environment' => $this->_context->getConfiguration()->getEnvironment(),
+      'environment' => sfConfig::get('sf_environment', 'undefined'),
       'generated at' => date('H:i:s j F Y'));
   }
   

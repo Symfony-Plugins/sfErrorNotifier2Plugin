@@ -11,6 +11,7 @@
  *
  * @package    symfony
  * @subpackage plugin
+ * 
  * @author     Daniele Occhipinti <>
  */
 class sfErrorNotifier

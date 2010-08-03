@@ -1,6 +1,6 @@
 <?php
 
-class sfErrorNotifierPluginConfiguration extends sfPluginConfiguration
+class sfErrorNotifier2PluginConfiguration extends sfPluginConfiguration
 {
   public function initialize()
   { 

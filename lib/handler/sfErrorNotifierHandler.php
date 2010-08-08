@@ -71,6 +71,7 @@ class sfErrorNotifierHandler
   {
     $message = $this->notifier()->decoratedMessage($e->getMessage());    
     $message->addSection('Exception', $this->notifier()->helper()->formatException($e));
+    $message->addSection('Server', $this->notifier()->helper()->formatServer());
     
     $this->notifier()->driver()->notify($message);
   }

@@ -1,30 +1,39 @@
 <?php
 
-class sfErrorNotifierMessageHtml extends sfBaseErrorNotifierMessage
+/**
+ *
+ * @package    sfErrorNotifier
+ * @subpackage decorator 
+ * 
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
+ */
+class sfErrorNotifierDecoratorHtml extends sfBaseErrorNotifierDecorator
 {
-  public function getFormat()
+  /**
+   * 
+   * @return string
+   */
+  public function format()
   {
     return 'text/html';
   }
   
+  /**
+   * 
+   * @return string
+   */
   public function render()
   {
-    //Initialize the body message
-    $body = '<div style="font-family: Verdana, Arial;">';
-
-    foreach ($this->_data as $title => $values) {
-      is_array($values) || $values = array($values); 
-      
-      $body .= $this->_renderTitle(ucfirst(strtolower($title)));
-      $body .= $this->_renderTable($values);
-    }
-   
-    $body .= '</div>';
-    
-    return $body;
+    return '<div style="font-family: Verdana, Arial;">'.parent::render().'</div>';
   }
   
-  protected function _renderTable(array $data)
+  /**
+   * 
+   * @param array $data
+   * 
+   * @return string
+   */
+  protected function _renderSection(array $data)
   {
     $body = '<table cellspacing="1" width="100%">';
     
@@ -37,12 +46,19 @@ class sfErrorNotifierMessageHtml extends sfBaseErrorNotifierMessage
     return $body;
   }
   
+  /**
+   * 
+   * @param string $th
+   * @param string $td
+   * 
+   * @return string
+   */
   protected function _renderRow($th, $td = '')
   {
     return "
       <tr style=\"padding: 4px;spacing: 0;text-align: left;\">\n
         <th style=\"background:#cccccc\" width=\"140px\">
-          {$this->_prepareTitle($th)}:
+          {$this->notifier()->helper()->formatTitle($th)}:
         </th>\n
         <td style=\"padding: 4px;spacing: 0;text-align: left;background:#eeeeee\">
           {$this->_prepareValue($td)}
@@ -50,17 +66,29 @@ class sfErrorNotifierMessageHtml extends sfBaseErrorNotifierMessage
       </tr>";  
   } 
   
+  /**
+   * 
+   * @param string $title
+   * 
+   * @return string
+   */
   protected function _renderTitle($title)
   {
     return "<h1 style=\"background: #0055A4; color:#ffffff;padding:5px;\">
-        {$this->_prepareTitle($title)}
+        {$this->notifier()->helper()->formatTitle($title)}
       </h1>";
   }
   
+  /**
+   * 
+   * @param string $value
+   * 
+   * @return string
+   */
   protected function _prepareValue($value)
   {
     $return = "<pre style='margin: 0px 0px 10px 0px; display: block; color: black; font-family: Verdana; border: 1px solid #cccccc; padding: 5px; font-size: 15px; line-height: 13px;'>";
-    $return .= nl2br(htmlspecialchars($value));
+    $return .= $this->notifier()->helper()->formatValue($value);
     $return .= '</pre>';
     
     return $return;

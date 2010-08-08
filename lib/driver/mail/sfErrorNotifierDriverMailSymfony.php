@@ -1,7 +1,18 @@
 <?php
 
+/** 
+ *
+ * @package    sfErrorNotifier
+ * @subpackage driver 
+ * 
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
+ */
 class sfErrorNotifierMailSymfony extends sfBaseErrorNotifierDriverMail
 {
+  /**
+   * (non-PHPdoc)
+   * @see plugins/sfErrorNotifier2Plugin/lib/driver/sfBaseErrorNotifierDriver#notify($message)
+   */
   public function notify(sfBaseErrorNotifierMessage $message)
   {
     if (!sfContext::hasInstance()) return;
@@ -13,8 +24,8 @@ class sfErrorNotifierMailSymfony extends sfBaseErrorNotifierDriverMail
       ->setTo($this->getOption('to'))
       ->setFrom($this->getOption('from'))
       ->setBody((string) $message)
-      ->setFormat($message->getFormat())
-      ->setSubject($message->getSubject());
+      ->setFormat($message->format())
+      ->setSubject($message->subject());
 
     @$context->getMailer()->send($swiftMessage);
   }

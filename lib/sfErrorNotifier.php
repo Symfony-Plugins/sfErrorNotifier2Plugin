@@ -1,41 +1,148 @@
 <?php
 
-/*
- * (c) 2008-2009 Daniele Occhipinti
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
  *
- * @package    symfony
- * @subpackage plugin
+ * @package    sfErrorNotifier
  * 
- * @author     Daniele Occhipinti <>
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
  */
 class sfErrorNotifier
 {
-  public static function notify(sfBaseErrorNotifierMessage $message)
+  /**
+   * 
+   * @var sfErrorNotifier
+   */
+  protected static $instance;
+  
+  /**
+   * 
+   * @var sfEventDispatcher
+   */
+  protected $dispather;
+  
+  /**
+   * 
+   * @param sfEventDispatcher $dispather
+   * 
+   * @return void
+   */
+  public function __construct(sfEventDispatcher $dispather)
   {
-    sfBaseErrorNotifierDriver::get()->notify($message);
+    $this->dispather = $dispather;
   }
   
-  public static function notifyEventExceptionThrown(sfEvent $event)
+  /**
+   * 
+   * @return sfEventDispatcher
+   */
+  public function dispather()
   {
-    return self::notifyException($event->getSubject());
+    return $this->dispather;
+  }
+  
+  /**
+   * 
+   * @param sfBaseErrorNotifierMessage
+   * 
+   * @return sfBaseErrorNotifierDecorator
+   */
+  public function decorator(sfBaseErrorNotifierMessage $message)
+  {
+    $options = sfConfig::get('sf_notify_decorator');
+    $class = $options['class'];
+    
+    return new $class($message);  
   }
 
-  public static function notifyException(Exception $exception)
+  /**
+   * 
+   * @return sfBaseErrorNotifierDriver
+   */
+  public function driver()
   {
-    $message = sfBaseErrorNotifierMessage::get($exception->getMessage(), array(
-      'exception' => array(
-      'class' => get_class($exception),
-      'code' => $exception->getCode(),
-      'message' => $exception->getMessage(),
-      'file' => "{$exception->getFile()}, Line: {$exception->getLine()}",
-      'trace' => $exception->getTraceAsString())));
+    $options = sfConfig::get('sf_notify_driver');
+    $class = $options['class'];
     
-    return self::notify($message);
+    return new $class($options['options']); 
+  }
+  
+  /**
+   * 
+   * @param string $title
+   * 
+   * @return sfBaseErrorNotifierMessage
+   */
+  public function message($title)
+  {
+    $options = sfConfig::get('sf_notify_message');
+    $class = $options['class'];
+
+    return new $class($title); 
+  }
+  
+  /**
+   * 
+   * @param string $title
+   * 
+   * @return sfBaseErrorNotifierDecorator
+   */
+  public function decoratedMessage($title)
+  {
+    return $this->decorator($this->message($title));
+  }
+  
+  /**
+   * 
+   * @return sfErrorNotifierHandler
+   */
+  public function handler()
+  {
+    $options = sfConfig::get('sf_notify_handler');
+    $class = $options['class'];
+
+    return new $class($options['options']); 
+  }
+  
+  /**
+   * 
+   * @return sfErrorNotifierMessageHelper
+   */
+  public function helper()
+  {
+    $options = sfConfig::get('sf_notify_helper');
+    $class = $options['class'];
+    
+    return new $class;
+  }
+  
+  /**
+   * 
+   * @return sfContext|sfErrorNotifierNullObject
+   */
+  public function context()
+  {
+    return sfContext::hasInstance() ? 
+      sfContext::getInstance() : 
+      new sfErrorNotifierNullObject();
+  }
+  
+  /**
+   * 
+   * @return sfErrorNotifier
+   */
+  public static function getInstance()
+  {
+    return self::$instance;
+  }
+  
+  /**
+   * 
+   * @param sfErrorNotifier
+   * 
+   * @return sfErrorNotifier
+   */
+  public static function setInstance(sfErrorNotifier $notifier)
+  {
+    return self::$instance = $notifier;
   }
 }

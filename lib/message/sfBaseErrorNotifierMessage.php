@@ -1,96 +1,112 @@
 <?php
 
 /**
- * 
- * @author Maksim Kotlyar <mkotlar@ukr.net>
  *
+ * @package    sfErrorNotifier
+ * @subpackage message 
+ * 
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
  */
-abstract class sfBaseErrorNotifierMessage
-{
+abstract class sfBaseErrorNotifierMessage implements IteratorAggregate
+{  
+  /**
+   * 
+   * @var string
+   */
+  protected $_subject;
+  
+  /**
+   * 
+   * @var array
+   */
   protected $_data = array();
   
-  protected $_context;
+  /**
+   * 
+   * @var ArrayIterator
+   */
+  protected $_dataIterator;
   
-  public function __construct($text = 'Internal error', $data = array(), $context = null)
-  {
-    $this->_context = $this->_initContext($context);
+  /**
+   * 
+   * @param string|void $title
+   */
+  public function __construct($title = 'Internal error')
+  {   
+    $this->addSection('Summary', $this->notifier()->helper()->formatSummary($title));
     
-    $this->_data = array_merge(
-      array('summary' => $this->_initSummarySection($text)),
-      $data,
-      array('server' => $this->_initServerSection()));
-  }
-  
-  public function __toString()
-  {
-    return $this->render(); 
+    $this->_subject = $this->notifier()->helper()->formatSubject($title);
   }
   
   /**
+   * 
    * @return string
    */
-  abstract public function render();
+  public function render()
+  {
+    return $this->subject();
+  }
   
-  /**
+    /**
+   * 
    * @return string
    */
-  abstract function getFormat();
-  
-  public function getSubject()
+  public function format()
   {
-    return "ERROR: {$this->_data['server']['uri']} - {$this->_data['summary']['environment']} - {$this->_data['summary']['subject']}";
-  }
-  
-  protected function _initSummarySection($text)
-  {
-    return array(
-      'subject' => $text,
-      'environment' => sfConfig::get('sf_environment', 'undefined'),
-      'generated at' => date('H:i:s j F Y'));
-  }
-  
-  protected function _initServerSection()
-  {
-    return array(
-      'module' => $this->_context->getModuleName(),
-      'action' => $this->_context->getActionName(),
-      'uri' => $this->_context->getRequest()->getUri(),
-      'server' => var_export($_SERVER, true),
-      'session' => var_export(isset($_SESSION) ? $_SESSION : null, true));
+    return 'text/plain';    
   }
   
   /**
    * 
-   * @param mixed $context
+   * @param string $name
+   * @param array $data
    * 
-   * @return sfContext|sfErrorNotifierNullContext
+   * @return sfErrorNotifierMessage
    */
-  protected function _initContext($context)
+  public function addSection($name, array $data)
   {
-    if ($context instanceof sfContext) return $context;
-    if (sfContext::hasInstance()) return sfContext::getInstance();
+    $this->_data[$name] = $data;
     
-    return new sfErrorNotifierNullContext();
-  }
-  
-  protected function _prepareTitle($title)
-  {
-    return ucfirst(strtolower($title));
+    return $this;
   }
   
   /**
    * 
-   * @param string|void $text
-   * @param array|void $data
-   * @param sfContext|void $context
+   * @param string $name
    * 
-   * @return sfBaseErrorNotifierMessage
+   * @return sfErrorNotifierMessage
    */
-  public static function get($text = 'Internal error', array $data, $context = null)
+  public function removeSection($name)
   {
-    $options = sfConfig::get('sf_notify_message');
-    $class = $options['class'];
+    unset($this->_data[$name]);
     
-    return new $class($text, $data, $context); 
+    return $this;
+  }
+  
+  /**
+   * 
+   * @return string 
+   */
+  public function subject()
+  {
+    return $this->_subject;
+  }
+  
+  /**
+   * 
+   * @return ArrayIterator
+   */
+  public function getIterator()
+  {
+    return new ArrayIterator($this->_data);
+  }
+  
+  /**
+   * 
+   * @return sfErrorNotifier
+   */
+  protected function notifier()
+  {
+    return sfErrorNotifier::getInstance();
   }
 }

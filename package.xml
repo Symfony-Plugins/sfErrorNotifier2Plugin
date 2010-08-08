@@ -12,7 +12,7 @@
 	  <email>mkotlar@ukr.net</email>
 	  <active>yes</active>
   </lead>
-  <date>2010-08-03</date>
+  <date>2010-08-04</date>
   <time>13:13:00</time>
   <version>
     <release>1.0.1</release>
@@ -58,7 +58,7 @@
       <package>
 				<name>symfony</name>
 				<channel>pear.symfony-project.com</channel>
-				<min>1.2.0</min>
+				<min>1.0.0</min>
 				<max>1.4.40</max>
       </package>
     </required>

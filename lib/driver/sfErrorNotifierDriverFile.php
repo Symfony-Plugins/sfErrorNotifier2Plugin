@@ -1,7 +1,18 @@
 <?php
 
+/** 
+ *
+ * @package    sfErrorNotifier
+ * @subpackage driver 
+ * 
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
+ */
 class sfErrorNotifierDriverFile extends sfBaseErrorNotifierDriver
 {
+  /**
+   * 
+   * @param array $options
+   */
   public function __construct(array $options = array())
   {
     $options['path'] = isset($options['path']) ? 
@@ -11,13 +22,17 @@ class sfErrorNotifierDriverFile extends sfBaseErrorNotifierDriver
     parent::__construct($options);
   }
   
+  /**
+   * 
+   * @param sfBaseErrorNotifierMessage $message
+   */
   public function notify(sfBaseErrorNotifierMessage $message)
-  {
+  {    
     $path = $this->getOption('path');
     file_exists($path) && unlink($path);
     
     $data = "
-      Content-type: {$message->getFormat()}
+      Content-type: {$message->format()}
       
       {$message}";
     

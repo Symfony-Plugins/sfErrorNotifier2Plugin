@@ -1,11 +1,15 @@
 <?php
 
 /**
+ * 
  * Universal implementaion of Null object pattern.
  *
- * @author Maksim Kotlyar <mkotlar@ukr.net>
+ * @package    sfErrorNotifier
+ * @subpackage util 
+ * 
+ * @author     Maksim Kotlyar <mkotlar@ukr.net>
  */
-class sfErrorNotifierNullContext implements IteratorAggregate
+class sfErrorNotifierNullObject implements IteratorAggregate
 {
   public function __get($name)
   {
